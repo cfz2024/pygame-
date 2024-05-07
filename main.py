@@ -146,7 +146,7 @@ class Monster():
     def destroy(self,bullet,chinese_num):
         if (self.left_up_x<bullet.rect.x and self.left_up_y<bullet.rect.y and self.right_down_x>bullet.rect.x
                 and self.right_down_y>bullet.rect.y):  #击中
-            print("击中",bullet.num_shoot[1])
+            #print("击中",bullet.num_shoot[1])
             bullet.num_shoot[2] = 0
             if chinese_num==self.english_num:   #正确击中
                 show_chinese.shoot=2
@@ -157,7 +157,11 @@ class Monster():
                 if bullet.num_shoot[1]==1 and bullet.num_shoot[3]==0:
                     time.sleep(0.0001)
                     vocabular_refreash(chinese_num,show_chinese.right)
-                    print("第一次正确击中计数")
+                    show_chinese.english_num = find_proper_grade(random.randint(0, total_words_grade[0] - 1))
+                    #print(total_words_grade[0])
+                    show_chinese.chinese_num = random.randint(show_chinese.english_num, show_chinese.english_num + 3)
+                    total_words_grade[0]=0
+                   # print("第一次正确击中计数")
                 bullet.num_shoot[3]=0
             else:    #错误击中
                 show_chinese.shoot+=1
@@ -170,9 +174,9 @@ class Monster():
                     time.sleep(0.0001)
                     show_chinese.shoot = 0
                     vocabular_refreash(chinese_num,show_chinese.right)
-                    print("第一次错误击中计数")
+                    #print("第一次错误击中计数")
         else:
-            print("没有击中,子弹序数",bullet.num_shoot[0])
+            #print("没有击中,子弹序数",bullet.num_shoot[0])
             show_chinese.shoot=0
 
             bullet.num_shoot[2]+=1
@@ -255,7 +259,8 @@ font = pygame.font.SysFont('华文宋体', 27)  # 使用默认字体，字体大
 text = font.render("Hello, Pygame!", True, (255, 255, 255))  # 渲染文本，参数分别为文本内容、是否抗锯齿、颜色（RGB）
 
 screen.fill((0, 0, 0))
-
+total_words_num=2129
+total_words_grade=[0]
 class carry_chinese():
     def __init__(self):
         self.x=0
@@ -278,16 +283,16 @@ class carry_chinese():
     def text_refreash(self,txt):
         self.text=txt
 show_chinese=carry_chinese()
-show_chinese.english_num=random.randint(0,2128)
+show_chinese.english_num=random.randint(0,total_words_num-1)
 show_chinese.chinese_num=random.randint(show_chinese.english_num,show_chinese.english_num+3) #随机生成四个英语中的一个汉语
-for member in range(0,2129):  #左闭右开
+for member in range(0,total_words_num):  #左闭右开
     show_chinese.total_grade+=int(file.words_list[member].grade)
 def find_proper_grade(grade_now):
     grade_count=0
     for member in file.words_list:
         grade_now-=int(member.grade)
         grade_count += 1
-        if grade_now==0 or grade_now<0:
+        if grade_now<=0:
             return grade_count
 
 right_times=[0]
@@ -305,6 +310,7 @@ def vocabular_refreash(num,y_n):
                     grade_now = int(member.grade)
             else:
                 grade_now=int(member.grade)
+            total_words_grade[0]+=grade_now
             strs = member.english + " " + member.chinese + " " +str(grade_now) + "\n"
             text += strs
             count+=1
@@ -340,10 +346,7 @@ while game_active:
 
     bullet0.o_bullet()
 
-    '''Monster.destroy(mon1,Bullet().list[0])
-    Monster.destroy(mon2, Bullet().list[0])
-    Monster.destroy(mon3, Bullet().list[0])
-    Monster.destroy(mon0, Bullet().list[0])'''
+
 
     bullet_num2=0
     for member in Bullet().list:
@@ -363,31 +366,7 @@ while game_active:
     Monster().M_survival[1] = monster_total_sur
     Monster().M_survival[0] = monster_total_sur
     Monster().M_show()
-    '''
-    if show_chinese.shoot==1:
-        print("shoot=1")
-        if mon0.english_num_shoot_count!=12:
-            mon0.english_num_shoot_count=10
-        if mon1.english_num_shoot_count != 12:
-            mon1.english_num_shoot_count = 10
-        if mon2.english_num_shoot_count != 12:
-            mon2.english_num_shoot_count = 10
-        if mon3.english_num_shoot_count != 12:
-            mon3.english_num_shoot_count = 10
-        show_chinese.english_num=random.randint(0,2124)    #正确命中后重新接连生成4个英文 左闭右闭
-        show_chinese.chinese_num = random.randint(show_chinese.english_num,show_chinese.english_num + 3)  # 随机生成四个英语中的一个汉语
-    elif show_chinese.shoot==0:
-        print("shoot=0")
-        if mon0.english_num_shoot_count != -12:
-            mon0.english_num_shoot_count = -10
-        if mon1.english_num_shoot_count != -12:
-            mon1.english_num_shoot_count = -10
-        if mon2.english_num_shoot_count != -12:
-            mon2.english_num_shoot_count = -10
-        if mon3.english_num_shoot_count != -12:
-            mon3.english_num_shoot_count = -10
-        #print("run wrong shoot")
-    show_chinese.shoot=2'''
+  
     count=show_chinese.english_num
     for member in Monster().M_list:
         if (member.sur==1 and people.rect.x>member.left_up_x and people.rect.x<member.right_down_x
